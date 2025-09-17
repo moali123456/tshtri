@@ -1,0 +1,31 @@
+/**--- Admins page css ---**/
+#customers-page {
+  .command-bx {
+    .border-b {
+      border-bottom: 0 !important;
+    }
+  }
+  .table-filters {
+    .react-select__control {
+      border-radius: 8px;
+      white-space: nowrap;
+      border-color: #e7e5e4;
+      background-color: #f5f6f8;
+    }
+  }
+  .admins-table {
+    button {
+      .lucide-chevron-down {
+        display: none;
+      }
+    }
+  }
+}
+.colored-select {
+  .react-select__control {
+    white-space: nowrap;
+    background-color: #f5f6f8;
+    border-color: #e7e5e4;
+    border-radius: 8px;
+  }
+}

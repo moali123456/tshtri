@@ -5,7 +5,6 @@ import LanguageSwitcher from "../../_components/language-switcher/LanguageSwitch
 import { Toaster } from "@/components/ui/sonner";
 import { isLoggedIn } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import LogoutButton from "../../_components/logout-button/LogutButton";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -21,10 +20,12 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import MainSidebar from "@/app/_components/main-sidebar/main-sidebar";
+// Fix this import path - go up 3 levels to reach app/_components
+import { LoadingProvider } from "@/app/_components/loading-provider/LoadingProvider";
 import "../../globals.css";
 
 export function generateStaticParams() {
-  return [{ locale: 'en' }, { locale: 'ar' }]; // Your supported locales
+  return [{ locale: "en" }, { locale: "ar" }];
 }
 
 export const metadata = {
@@ -52,58 +53,50 @@ export default async function DashboardLayout({
   return (
     <html lang={locale}>
       <body className="">
-        <NextIntlClientProvider locale={locale}>
-          {/* <div className="flex gap-10 items-center justify-center p-6 bg-amber-900 text-white">
-            <LogoutButton />
-          </div> */}
-          {/* <SidebarProvider>
-            <MainSidebar />
-            <SidebarTrigger />
-            {children}
-          </SidebarProvider> */}
+        <LoadingProvider minimumLoadingTime={3000} showProgress={true}>
+          <NextIntlClientProvider locale={locale}>
+            <SidebarProvider>
+              <MainSidebar />
+              <SidebarInset>
+                <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+                  <div className="w-full flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 px-4">
+                      <SidebarTrigger className="-ml-1" />
+                      <Separator
+                        orientation="vertical"
+                        className="mr-2 data-[orientation=vertical]:h-4"
+                      />
+                      <Breadcrumb>
+                        <BreadcrumbList>
+                          <BreadcrumbItem className="hidden md:block">
+                            <BreadcrumbLink href="#">
+                              Building Your Application
+                            </BreadcrumbLink>
+                          </BreadcrumbItem>
+                          <BreadcrumbSeparator className="hidden md:block" />
+                          <BreadcrumbItem>
+                            <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                          </BreadcrumbItem>
+                        </BreadcrumbList>
+                      </Breadcrumb>
+                    </div>
 
-          <SidebarProvider>
-            <MainSidebar />
-            <SidebarInset>
-              <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-                <div className="w-full flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 px-4">
-                    <SidebarTrigger className="-ml-1" />
-                    <Separator
-                      orientation="vertical"
-                      className="mr-2 data-[orientation=vertical]:h-4"
-                    />
-                    <Breadcrumb>
-                      <BreadcrumbList>
-                        <BreadcrumbItem className="hidden md:block">
-                          <BreadcrumbLink href="#">
-                            Building Your Application
-                          </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator className="hidden md:block" />
-                        <BreadcrumbItem>
-                          <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                        </BreadcrumbItem>
-                      </BreadcrumbList>
-                    </Breadcrumb>
+                    <div className="px-4">
+                      <LanguageSwitcher
+                        currentLocale={locale}
+                        availableLocales={routing.locales}
+                      />
+                    </div>
                   </div>
-
-                  <div className="px-4">
-                    <LanguageSwitcher
-                      currentLocale={locale}
-                      availableLocales={routing.locales}
-                    />
-                  </div>
+                </header>
+                <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                  {children}
                 </div>
-              </header>
-              <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                {children}
-              </div>
-            </SidebarInset>
-          </SidebarProvider>
-
-          <Toaster position="top-center" />
-        </NextIntlClientProvider>
+              </SidebarInset>
+            </SidebarProvider>
+            <Toaster position="top-center" />
+          </NextIntlClientProvider>
+        </LoadingProvider>
       </body>
     </html>
   );

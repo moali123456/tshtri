@@ -19,14 +19,12 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { EllipsisVertical, Trash2, Pencil } from "lucide-react";
+import { EllipsisVertical, CirclePause } from "lucide-react";
 import PaginationControls from "@/app/_components/pagination-controls/pagination-controls";
 import { PuffLoader } from "react-spinners";
-import AddAdminModal from "./add-admin-modal";
-import EditAdminModal from "./edit-admin-modal";
-import DeleteAdminModal from "./delete-admin-modal";
+import DeactivateCustomerModal from "./deactivate-customer-modal";
 
-export default function AdminsTable({
+export default function CustomersTable({
   initialData,
   currentPage,
   searchParams,
@@ -37,10 +35,10 @@ export default function AdminsTable({
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
   const [isClientPending, setClientPending] = useState(false);
-  const [editingAdmin, setEditingAdmin] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [adminToDelete, setAdminToDelete] = useState(null);
+  //const [editingAdmin, setEditingAdmin] = useState(null);
+  //const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+  const [customerToDeactivate, setCustomerToDeactivate] = useState(null);
 
   // To reset select menu after action
   const [selectActionStates, setSelectActionStates] = useState({});
@@ -48,26 +46,26 @@ export default function AdminsTable({
   const locale = useLocale();
   const isRTL = locale === "ar";
 
-  const handleAdminAdded = () => {
+  const handleCustomerAdded = () => {
     startTransition(() => {
       router.refresh();
     });
   };
 
-  const handleAdminUpdated = () => {
-    handleAdminAdded(); // Refresh the table
-    setEditingAdmin(null);
-    setIsEditModalOpen(false);
-  };
+  // const handleAdminUpdated = () => {
+  //   handleAdminAdded(); // Refresh the table
+  //   setEditingAdmin(null);
+  //   setIsEditModalOpen(false);
+  // };
 
-  const handleEditClick = (admin) => {
-    setEditingAdmin(admin);
-    setIsEditModalOpen(true);
-  };
+  // const handleEditClick = (admin) => {
+  //   setEditingAdmin(admin);
+  //   setIsEditModalOpen(true);
+  // };
 
-  const handleDeleteClick = (admin) => {
-    setAdminToDelete(admin);
-    setIsDeleteModalOpen(true);
+  const handleDeactivateClick = (admin) => {
+    setCustomerToDeactivate(admin);
+    setIsDeactivateModalOpen(true);
   };
 
   const admins = initialData?.items || [];
@@ -89,7 +87,8 @@ export default function AdminsTable({
   return (
     <div className="pt-1 pb-4 px-4">
       <div className="mb-5 w-full flex justify-end">
-        <AddAdminModal rolesList={rolesList} onAdminAdded={handleAdminAdded} />
+        {/* <AddAdminModal rolesList={rolesList} onAdminAdded={handleAdminAdded} /> */}
+        {/* <AddCustomerModal /> */}
       </div>
 
       <Table className="admins-table">
@@ -151,11 +150,11 @@ export default function AdminsTable({
                     value={selectActionStates[admin.id] || ""}
                     onValueChange={(value) => {
                       if (value === "edit") {
-                        handleEditClick(admin);
+                        // handleEditClick(admin);
                       } else if (value === "delete") {
                         // Handle delete logic here
                         //alert(`Delete admin: ${admin.name}`);
-                        handleDeleteClick(admin);
+                        handleDeactivateClick(admin);
                       }
 
                       // Reset the selected value for this admin
@@ -177,16 +176,16 @@ export default function AdminsTable({
                           : "translate-x-[calc(-100%+40px)]"
                       }
                     >
-                      <SelectItem value="edit" className="cursor-pointer">
+                      {/* <SelectItem value="edit" className="cursor-pointer">
                         <div className="flex items-center">
                           <Pencil className="mr-2 h-4 w-4" />
                           {t("edit")}
                         </div>
-                      </SelectItem>
+                      </SelectItem> */}
                       <SelectItem value="delete" className="cursor-pointer">
                         <div className="flex items-center text-red-600">
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          {t("delete")}
+                          <CirclePause className="mr-2 h-4 w-4" />
+                          {t("deactivate")}
                         </div>
                       </SelectItem>
                     </SelectContent>
@@ -225,17 +224,18 @@ export default function AdminsTable({
       </div>
 
       {/* Edit Admin Modal */}
-      <EditAdminModal
+      {/* <EditAdminModal
         open={isEditModalOpen}
         onOpenChange={setIsEditModalOpen}
         rolesList={rolesList}
         admin={editingAdmin}
         onAdminUpdated={handleAdminUpdated}
         onClose={() => setIsEditModalOpen(false)}
-      />
+      /> */}
+      {/* <EditCustomerModal /> */}
 
       {/* Delete Admin Modal */}
-      <DeleteAdminModal
+      {/* <DeleteAdminModal
         open={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
         onClose={() => {
@@ -244,6 +244,16 @@ export default function AdminsTable({
         }}
         admin={adminToDelete}
         onAdminDeleted={handleAdminAdded}
+      /> */}
+      <DeactivateCustomerModal
+        open={isDeactivateModalOpen}
+        onOpenChange={setIsDeactivateModalOpen}
+        onClose={() => {
+          setIsDeactivateModalOpen(false);
+          setCustomerToDeactivate(null);
+        }}
+        customer={customerToDeactivate}
+        onCustomerDeactivate={handleCustomerAdded}
       />
     </div>
   );

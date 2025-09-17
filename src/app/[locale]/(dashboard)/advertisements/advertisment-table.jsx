@@ -22,11 +22,9 @@ import {
 import { EllipsisVertical, Trash2, Pencil } from "lucide-react";
 import PaginationControls from "@/app/_components/pagination-controls/pagination-controls";
 import { PuffLoader } from "react-spinners";
-import AddAdminModal from "./add-admin-modal";
-import EditAdminModal from "./edit-admin-modal";
-import DeleteAdminModal from "./delete-admin-modal";
+import DeleteAdModal from "./[advertisementId]/delete-ad-modal";
 
-export default function AdminsTable({
+export default function AdvertismentTable({
   initialData,
   currentPage,
   searchParams,
@@ -37,10 +35,8 @@ export default function AdminsTable({
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
   const [isClientPending, setClientPending] = useState(false);
-  const [editingAdmin, setEditingAdmin] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [adminToDelete, setAdminToDelete] = useState(null);
+  const [advertiseToDelete, setAdvertiseToDelete] = useState(null);
 
   // To reset select menu after action
   const [selectActionStates, setSelectActionStates] = useState({});
@@ -48,29 +44,29 @@ export default function AdminsTable({
   const locale = useLocale();
   const isRTL = locale === "ar";
 
-  const handleAdminAdded = () => {
+  const handleAdvertiseAdded = () => {
     startTransition(() => {
       router.refresh();
     });
   };
 
   const handleAdminUpdated = () => {
-    handleAdminAdded(); // Refresh the table
+    handleAdvertiseAdded(); // Refresh the table
     setEditingAdmin(null);
-    setIsEditModalOpen(false);
+    //setIsEditModalOpen(false);
   };
 
-  const handleEditClick = (admin) => {
-    setEditingAdmin(admin);
-    setIsEditModalOpen(true);
+  const handleEditClick = (ads) => {
+    // Navigate to the advertisement details page WITH locale
+    router.push(`/${locale}/advertisements/${ads.id}`);
   };
 
-  const handleDeleteClick = (admin) => {
-    setAdminToDelete(admin);
+  const handleDeleteClick = (advertise) => {
+    setAdvertiseToDelete(advertise);
     setIsDeleteModalOpen(true);
   };
 
-  const admins = initialData?.items || [];
+  const ads = initialData?.items || [];
   const totalPages = initialData?.totalPages || 1;
 
   const handlePageChange = (newPage) => {
@@ -88,9 +84,7 @@ export default function AdminsTable({
 
   return (
     <div className="pt-1 pb-4 px-4">
-      <div className="mb-5 w-full flex justify-end">
-        <AddAdminModal rolesList={rolesList} onAdminAdded={handleAdminAdded} />
-      </div>
+      <div className="mb-5 w-full flex justify-end"></div>
 
       <Table className="admins-table">
         <TableHeader>
@@ -99,17 +93,35 @@ export default function AdminsTable({
               ID
             </TableHead>
             <TableHead className="w-[200px] bg-white font-semibold text-[15px] text-start">
-              {t("admins.full-name")}
+              {t("seller-name")}
             </TableHead>
             <TableHead className="bg-white font-semibold text-[15px] text-start">
-              {t("admins.email")}
+              {t("seller-phone")}
             </TableHead>
             <TableHead className="bg-white font-semibold text-[15px] text-start">
-              {t("admins.phone-number")}
+              {t("category-name")}
             </TableHead>
             <TableHead className="bg-white font-semibold text-[15px] text-start">
-              {t("admins.status")}
+              {t("city")}
             </TableHead>
+            <TableHead className="bg-white font-semibold text-[15px] text-start">
+              {t("price")}
+            </TableHead>
+            <TableHead className="bg-white font-semibold text-[15px] text-start">
+              {t("date")}
+            </TableHead>
+            <TableHead className="bg-white font-semibold text-[15px] text-start">
+              {t("published")}
+            </TableHead>
+            <TableHead className="bg-white font-semibold text-[15px] text-start">
+              {t("negotiable")}
+            </TableHead>
+            <TableHead className="bg-white font-semibold text-[15px] text-start">
+              {t("sold")}
+            </TableHead>
+            {/* <TableHead className="bg-white font-semibold text-[15px] text-start">
+              {t("sold-at")}
+            </TableHead> */}
             <TableHead className="bg-white font-semibold text-[15px] text-start">
               {t("actions")}
             </TableHead>
@@ -119,23 +131,59 @@ export default function AdminsTable({
         <TableBody>
           {isClientPending ? (
             <TableRow>
-              <TableCell colSpan={6}>
+              <TableCell colSpan={10}>
                 <div className="flex flex-col gap-2 justify-center items-center py-12">
                   <PuffLoader size={50} color="#4ca161" />
                   <span className="text-gray-500 mr-3">
-                    {t("admins.loading-admins")}
+                    {t("loading-advertisment")}
                   </span>
                 </div>
               </TableCell>
             </TableRow>
-          ) : admins.length > 0 ? (
-            admins.map((admin) => (
-              <TableRow key={admin.id}>
-                <TableCell>{admin.id}</TableCell>
-                <TableCell className="font-medium">{admin.name}</TableCell>
-                <TableCell>{admin.email}</TableCell>
-                <TableCell>{admin.phoneNumber}</TableCell>
+          ) : ads.length > 0 ? (
+            ads.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.id}</TableCell>
+                <TableCell>{item.sellerName}</TableCell>
+                <TableCell>{item.sellerPhone}</TableCell>
+                <TableCell>{item.category}</TableCell>
+                <TableCell>{item.city}</TableCell>
+                <TableCell>{item.price}</TableCell>
+                <TableCell>{item.createdAt}</TableCell>
                 <TableCell>
+                  {item.isPublished ? (
+                    <span className="bg-[#b6e2bf] py-1 px-3 text-[12px] rounded-full inline-flex">
+                      {t("published")}
+                    </span>
+                  ) : (
+                    <span className="bg-[#ff5b5f] text-white py-1 px-3 text-[12px] rounded-full inline-flex">
+                      {t("not-published")}
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {item.isNegotionable ? (
+                    <span className="bg-[#b6e2bf] py-1 px-3 text-[12px] rounded-full inline-flex">
+                      {t("negotiable")}
+                    </span>
+                  ) : (
+                    <span className="bg-[#ff5b5f] text-white py-1 px-3 text-[12px] rounded-full inline-flex">
+                      {t("not-negotiable")}
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {item.isSold ? (
+                    <span className="bg-[#b6e2bf] py-1 px-3 text-[12px] rounded-full inline-flex">
+                      {t("sold")}
+                    </span>
+                  ) : (
+                    <span className="bg-[#ff5b5f] text-white py-1 px-3 text-[12px] rounded-full inline-flex">
+                      {t("not-sold")}
+                    </span>
+                  )}
+                </TableCell>
+                {/* <TableCell>
                   {admin.active ? (
                     <span className="bg-[#b6e2bf] py-1 px-5 text-sm rounded-full inline-flex">
                       {t("admins.active")}
@@ -145,23 +193,23 @@ export default function AdminsTable({
                       {t("admins.inactive")}
                     </span>
                   )}
-                </TableCell>
+                </TableCell> */}
                 <TableCell>
                   <Select
-                    value={selectActionStates[admin.id] || ""}
+                    value={selectActionStates[item.id] || ""}
                     onValueChange={(value) => {
                       if (value === "edit") {
-                        handleEditClick(admin);
+                        handleEditClick(item);
                       } else if (value === "delete") {
                         // Handle delete logic here
                         //alert(`Delete admin: ${admin.name}`);
-                        handleDeleteClick(admin);
+                        handleDeleteClick(item);
                       }
 
                       // Reset the selected value for this admin
                       setSelectActionStates((prev) => ({
                         ...prev,
-                        [admin.id]: "",
+                        [item.id]: "",
                       }));
                     }}
                   >
@@ -200,7 +248,7 @@ export default function AdminsTable({
                 colSpan={6}
                 className="text-center text-gray-500 py-10"
               >
-                {t("no-admins-found")}
+                {t("no-advertisment-found")}
               </TableCell>
             </TableRow>
           )}
@@ -209,7 +257,7 @@ export default function AdminsTable({
         <TableFooter>
           <TableRow>
             <TableCell colSpan={6}>
-              {t("showing")} {admins.length} {t("admins-text")} - {t("page")}{" "}
+              {t("showing")} {ads.length} {t("admins-text")} - {t("page")}{" "}
               {currentPage} {t("of")} {totalPages}
             </TableCell>
           </TableRow>
@@ -224,26 +272,16 @@ export default function AdminsTable({
         />
       </div>
 
-      {/* Edit Admin Modal */}
-      <EditAdminModal
-        open={isEditModalOpen}
-        onOpenChange={setIsEditModalOpen}
-        rolesList={rolesList}
-        admin={editingAdmin}
-        onAdminUpdated={handleAdminUpdated}
-        onClose={() => setIsEditModalOpen(false)}
-      />
-
-      {/* Delete Admin Modal */}
-      <DeleteAdminModal
+      {/* Delete advertise Modal */}
+      <DeleteAdModal
         open={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false);
-          setAdminToDelete(null);
+          setAdvertiseToDelete(null);
         }}
-        admin={adminToDelete}
-        onAdminDeleted={handleAdminAdded}
+        advertise={advertiseToDelete}
+        onAdvertiseDeleted={handleAdvertiseAdded}
       />
     </div>
   );

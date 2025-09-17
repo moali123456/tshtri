@@ -1,6 +1,14 @@
 "use client";
 import { useTranslations, useLocale } from "next-intl";
-import { BookOpen, Bot, Settings2, SquareTerminal } from "lucide-react";
+import {
+  BookOpen,
+  Bot,
+  Settings2,
+  SquareTerminal,
+  Users,
+  Notebook,
+  ShieldUser,
+} from "lucide-react";
 
 import { NavMain } from "./nav-main";
 import {
@@ -20,7 +28,7 @@ function MainSidebar({ ...props }) {
   const t = useTranslations("sidebar");
   const locale = useLocale();
 
-  const isRTL = locale === "ar"; 
+  const isRTL = locale === "ar";
 
   const data = {
     navMain: [
@@ -32,38 +40,35 @@ function MainSidebar({ ...props }) {
       {
         title: t("users"),
         url: "#",
-        icon: SquareTerminal,
+        icon: Users,
         //isActive: true,
         items: [
           {
-            title: t("admins"),
+            title: (
+              <span className="flex gap-1">
+                <ShieldUser className="size-4" /> {t("admins")}
+              </span>
+            ),
             url: "/admins",
-            isActive: true,
+            //isActive: true,
+            //icon: Users,
           },
           {
             title: t("customers"),
-            url: "#",
+            url: "/customers",
+            //icon: ShieldUser,
           },
         ],
       },
       {
-        title: "Models",
-        url: "#",
+        title: t("advertisements"),
+        url: "/advertisements",
         icon: Bot,
-        items: [
-          {
-            title: "Genesis",
-            url: "#",
-          },
-          {
-            title: "Explorer",
-            url: "#",
-          },
-          {
-            title: "Quantum",
-            url: "#",
-          },
-        ],
+      },
+      {
+        title: t("contacts"),
+        url: "/contacts",
+        icon: Notebook,
       },
       {
         title: "Documentation",
@@ -115,7 +120,11 @@ function MainSidebar({ ...props }) {
   };
 
   return (
-    <Sidebar collapsible="icon" {...props} className={isRTL ? "right-0" : "left-0"}>
+    <Sidebar
+      collapsible="icon"
+      {...props}
+      className={isRTL ? "right-0" : "left-0"}
+    >
       {/* Header */}
       <SidebarHeader>
         <SidebarMenu>

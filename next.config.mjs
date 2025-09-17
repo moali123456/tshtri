@@ -7,6 +7,9 @@
 const nextConfig = {
   // your Next.js config options here
   // output: "export",
+  images: {
+    domains: ["tshtriweb-test.domnex.com"],
+  },
 };
 
 const createPlugin = async () => {

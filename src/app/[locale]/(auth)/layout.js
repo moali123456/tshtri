@@ -7,6 +7,7 @@ import { isLoggedIn } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Images from "../../../../public/assets/images/images";
 import Image from "next/image";
+import { LoadingProvider } from "@/app/_components/loading-provider/LoadingProvider";
 import "../../globals.css";
 
 export const metadata = {
@@ -33,24 +34,26 @@ export default async function AuthLayout({ children, params: paramsPromise }) {
       <body
         className={`min-h-screen flex flex-col items-center justify-center bg-[#f7f7f8] relative`}
       >
-        <div className="flex gap-10 items-center justify-center absolute top-12 end-12">
-          <div className="py-2.5 px-3 flex rounded-[6px] shadow-sm bg-white">
-            <LanguageSwitcher
-              currentLocale={locale}
-              availableLocales={routing.locales}
-            />
+        <LoadingProvider minimumLoadingTime={3000} showProgress={true}>
+          <div className="flex gap-10 items-center justify-center absolute top-12 end-12">
+            <div className="py-2.5 px-3 flex rounded-[6px] shadow-sm bg-white">
+              <LanguageSwitcher
+                currentLocale={locale}
+                availableLocales={routing.locales}
+              />
+            </div>
           </div>
-        </div>
-        <div className="mb-7">
-          <Image src={Images.colorLogo} alt="logo" width={180} height={60} />
-        </div>
+          <div className="mb-7">
+            <Image src={Images.colorLogo} alt="logo" width={180} height={60} />
+          </div>
 
-        <NextIntlClientProvider locale={locale}>
-          <div className="w-full max-w-md p-6 bg-white rounded-[12px]">
-            {children}
-          </div>
-        </NextIntlClientProvider>
-        <Toaster position="top-center" />
+          <NextIntlClientProvider locale={locale}>
+            <div className="w-full max-w-md p-6 bg-white rounded-[12px]">
+              {children}
+            </div>
+          </NextIntlClientProvider>
+          <Toaster position="top-center" />
+        </LoadingProvider>
       </body>
     </html>
   );

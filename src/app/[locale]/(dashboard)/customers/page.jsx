@@ -1,20 +1,20 @@
 import { Suspense } from "react";
 import { useTranslations } from "next-intl";
-import AdminsTable from "./admins-table";
-import TableFilters from "./table-filters";
-import { getAdmins } from "@/lib/actions/admin/admin-actions";
+import CustomersTable from "./customers-table";
+import CustomersFilter from "./customers-filter";
+import { getCustomers } from "@/lib/actions/customer/customer-actions";
 import { getRolesList } from "@/lib/actions/roles-actions";
-import "./admins-page.scss";
+import "./customers-page.scss";
 
-export default async function AdminPage({ searchParams }) {
+export default async function CustomerPage({ searchParams }) {
   // Include all search parameters for filtering
   const params = await searchParams;
   const currentPage = Number(params?.page) || 1;
   const pageSize = 8;
 
   // Fetch both admins and roles in parallel
-  const [adminsData, rolesList] = await Promise.all([
-    getAdmins(currentPage, pageSize, {
+  const [customersData, rolesList] = await Promise.all([
+    getCustomers(currentPage, pageSize, {
       name: params.name,
       email: params.email,
       phoneNumber: params.phoneNumber,
@@ -25,8 +25,8 @@ export default async function AdminPage({ searchParams }) {
   ]);
 
   return (
-    <AdminPageContent
-      adminsData={adminsData}
+    <CustomerPageContent
+      customersData={customersData}
       currentPage={currentPage}
       searchParams={params}
       rolesList={rolesList}
@@ -35,27 +35,27 @@ export default async function AdminPage({ searchParams }) {
 }
 
 // Client component to handle translations
-function AdminPageContent({
-  adminsData,
+function CustomerPageContent({
+  customersData,
   currentPage,
   searchParams,
   rolesList,
 }) {
-  const t = useTranslations("admins");
+  const t = useTranslations();
   console.log("texxxt");
 
   return (
-    <div id="admins-page">
+    <div id="customers-page">
       <div className="mb-8">
         <h1 className="text-3xl font-medium text-[#4ca161]">
-          {t("admins-page")}
+          {t("customers-page")}
         </h1>
-        <h3 className="text-gray-500">{t("welcome-message")}</h3>
+        <h3 className="text-gray-500">{t("customer-welcome-message")}</h3>
       </div>
 
       {/* filters */}
       <div className="">
-        <TableFilters
+        <CustomersFilter
           initialSearchParams={searchParams}
           rolesList={rolesList}
         />
@@ -66,8 +66,8 @@ function AdminPageContent({
         <div className="col-span-12 md:col-span-12">
           <div className="bg-muted/50 p-6 rounded-xl">
             <Suspense fallback={<div>Loading table...</div>}>
-              <AdminsTable
-                initialData={adminsData}
+              <CustomersTable
+                initialData={customersData}
                 currentPage={currentPage}
                 searchParams={searchParams}
                 rolesList={rolesList}
