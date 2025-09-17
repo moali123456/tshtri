@@ -54,6 +54,7 @@ export default async function AuthLayout({ children, params: paramsPromise }) {
           </NextIntlClientProvider>
           <Toaster position="top-center" />
         </LoadingProvider>
+        
       </body>
     </html>
   );
